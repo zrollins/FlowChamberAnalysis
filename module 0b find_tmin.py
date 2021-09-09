@@ -50,7 +50,7 @@ elif check.lower() == 'n':
     C_l_vals.append(C_l)
     
 # flow rate
-Q = int(input('Enter flow rate: '))
+Q = int(input('Enter flow rate: ')) * (10**27 / 3600) # mL/h to pm^3/s
 
 # Trackmate files
 # nonspec_track_data = input('For flow rate = %d, enter name of \"Track statistics\" file(s) (from Trackmate) for non-specific ligand: ' % Q)
@@ -115,38 +115,38 @@ for i in range(len(spec_spots_list)):
  
 # %% force calculations
 # assuming 1 Q value, 1 site density/coating conc
-mu = float(input('Enter viscosity (dyne-s/cm^2): ')) # check viscosity units
-a = float(input('Enter cell radius (microns): '))
-d = float(input('Enter critical distance (microns): '))
-L = float(input('Enter receptor-ligand bond length (nm): '))
-b = float(input('Enter flow chamber height (microns): '))
-b /= 2
-w = float(input('Enter flow chamber width (microns): '))
-CCD_FPS = int(input('Enter CCD FPS: '))
-
-# %% parameters with unit conversions
-# mu = float(input('Enter viscosity (dyne-s/cm^2): ')) * 1e14
-# a = float(input('Enter cell radius (microns): ')) * 1e6
-# d = float(input('Enter critical distance (microns): ')) * 1e6
-# L = float(input('Enter receptor-ligand bond length (nm): ')) * 1e3
-# b = float(input('Enter flow chamber height (microns): ')) * 10e6
+# mu = float(input('Enter viscosity (dyne-s/cm^2): ')) # check viscosity units
+# a = float(input('Enter cell radius (microns): '))
+# d = float(input('Enter critical distance (microns): '))
+# L = float(input('Enter receptor-ligand bond length (nm): '))
+# b = float(input('Enter flow chamber height (microns): '))
 # b /= 2
-# w = float(input('Enter flow chamber width (microns): ')) * 10e6
-# parameters.append([mu, a, b, L, w, d])
-
-# y = a+d
-
+# w = float(input('Enter flow chamber width (microns): '))
 # CCD_FPS = int(input('Enter CCD FPS: '))
 
-# # inter/extrapolation
-# da = np.array([0, 10e-8, 10e-7, 10e-6, 
-#                10e-5, 10e-4, 10e-3, 0.003202])
-# speed_constants = np.array([0.5676, 0.5556, 0.5539, 0.5518, 
-#                            0.5488, 0.5445, 0.5375, 0.5315])
-# fit_func = interpolate.interp1d(da, speed_constants,
-#                                 fill_value='extrapolate')
+# %% parameters with unit conversions
+mu = float(input('Enter viscosity (dyne-s/cm^2): ')) * 1e-13
+a = float(input('Enter cell radius (microns): ')) * 1e6
+d = float(input('Enter critical distance (microns): ')) * 1e6
+L = float(input('Enter receptor-ligand bond length (nm): ')) * 1e3
+b = float(input('Enter flow chamber height (microns): ')) * 10e6
+b /= 2
+w = float(input('Enter flow chamber width (microns): ')) * 10e6
+# parameters.append([mu, a, b, L, w, d])
 
-# speed_const = fit_func(d/a)
+y = a+d
+
+CCD_FPS = int(input('Enter CCD FPS: '))
+
+# inter/extrapolation
+da = np.array([0, 10e-8, 10e-7, 10e-6, 
+               10e-5, 10e-4, 10e-3, 0.003202])
+speed_constants = np.array([0.5676, 0.5556, 0.5539, 0.5518, 
+                            0.5488, 0.5445, 0.5375, 0.5315])
+fit_func = interpolate.interp1d(da, speed_constants,
+                                fill_value='extrapolate')
+
+speed_const = fit_func(d/a)
 
 # tether force
 f = Q * np.sqrt(a/(2*L)) * (1.7005 * 9*np.pi*mu*a**2 + 0.9440 * 6*np.pi*mu*a**2) / (w*b**2)
