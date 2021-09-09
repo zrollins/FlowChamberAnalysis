@@ -25,7 +25,7 @@ while True:
     
     elif run.lower() == 'y':
         # flow rate
-        Q = float(input('Enter flow rate: '))
+        Q = float(input('Enter flow rate: ')) * (10**27 / 3600) # mL/h to pm^3/s
         Q_list.append(Q)
 
         # site densities or coating conc?
