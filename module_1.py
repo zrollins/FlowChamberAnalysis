@@ -345,7 +345,7 @@ for m in range(len(track_data)):
             k_off_sublist = []
             for p in range(len(t_total_unique)):
                 if t_total_unique[p] != 0:
-                    k_off_sublist.append(1/t_total_unique[p])
+                    k_off_sublist.append(1/t_total[p])
                 else:
                     k_off_sublist.append(0) 
                     # if lifetime = 0, just append 0 as a placeholder
@@ -354,12 +354,12 @@ for m in range(len(track_data)):
             
             # getting entire k_off arrays into list
             avg_k_off = np.mean(k_off_sublist)
-            # std_error = stats.sem(k_off_sublist)
+            std_error = stats.sem(k_off_sublist)
             Nb = len(tc_trackID_unique)
             NT = len(filtered_tracks_list)
             
             koff_avg_vals_subsub.append(avg_k_off)
-            # koff_error_vals_subsub.append(std_error)
+            koff_error_vals_subsub.append(std_error)
             Nb_vals_subsub.append(Nb)
             NbNT_vals_subsub.append(Nb/NT)
         
@@ -547,20 +547,22 @@ elif len(lists) == 11:
     
 # plotting koff vs force
 # slip model
+
 if (len(lists) == 4) or (len(lists) == 11):
     plt.figure(0)
     plt.xlabel('Force (pN)')
     plt.ylabel(r'$k_{off} (s^{-1})$')
-    plt.title('Slip')
+    plt.title('Bond Dissociation Model(s)')
     
     for i in range(len(koff_vals_s)):
-        plt.plot(force_vals_s[i], koff_vals_s[i], '.')
+        plt.plot(force_vals_s[i], koff_vals_s[i], '.',
+                 label=r'$C_l = %d$' % coating_concs[i])
         
         plt.plot(force_vals_s[i],
                   slip_func(np.array(force_vals_s[i]),
                             x_B_vals_s[i],
                             koff_0_vals[i]),
-                  )
+                  label=r'Best-fit curve for $C_l = %d$; slip bond' % coating_concs[i])
         
         # avoid graphing error when only 1 trial is used
         for i in range(len(koff_error_vals)):
@@ -572,16 +574,18 @@ if (len(lists) == 4) or (len(lists) == 11):
                                            koff_0_vals[i]),
                                  yerr=koff_error_vals[i][j],
                                  ecolor='k',
+    
                                  capsize=5)
 
 if (len(lists) == 7) or (len(lists) == 11):
     plt.figure(1)
     plt.xlabel('Force (pN)')
     plt.ylabel(r'$k_{off} (s^{-1})$')
-    plt.title('Catch-slip')
+    plt.title('Bond Dissociation Model(s)')
     
     for i in range(len(koff_vals_cs)):
-        plt.plot(force_vals_cs[i], koff_vals_cs[i], '.')
+        plt.plot(force_vals_cs[i], koff_vals_cs[i], '.', 
+                 label=r'$C_l = %d$' % coating_concs[i])
         
         plt.plot(force_vals_cs[i],
                   catch_slip(np.array(force_vals_cs[i]),
@@ -590,7 +594,7 @@ if (len(lists) == 7) or (len(lists) == 11):
                             f_12_vals[i],
                             k_2rup_vals[i],
                             x_B_vals_cs[i]),
-                  )
+                  label=r'Best-fit curve for $C_l = %d$; catch-slip bond' % coating_concs[i])
         
         # avoid graphing error when only 1 trial is used
         for i in range(len(koff_error_vals)):
